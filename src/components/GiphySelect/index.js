@@ -73,14 +73,31 @@ export default class GiphySelect extends Component {
   _fetchItems = () => {
     const { requestKey, requestLang, requestRating } = this.props;
     let endpoint = '';
-    if (this._query) {
+    let searchById = false;
+
+    if(this._query.indexOf('id:') > -1){
+      endpoint = `${this._query.substring(3)}`;
+      searchById = true;
+    }
+    else if (this._query) {
       endpoint = `search?q=${encodeURIComponent(this._query)}&`;
-    } else {
+    }
+    else {
       endpoint = 'trending?';
     }
     const offset = this._offset;
 
-    fetch(`${location.protocol}//api.giphy.com/v1/gifs/${endpoint}offset=${offset}&lang=${requestLang}&rating=${requestRating}&api_key=${requestKey}`)
+    const apiURL = `${location.protocol}//api.giphy.com/v1/gifs/}`;
+    let searchURL;
+    if(searchById){
+      searchURL = `${apiURL}${endpoint}&api_key=${requestKey}`
+    }else{
+      searchURL = `${apiURL}${endpoint}offset=${offset}&lang=${requestLang}&rating=${requestRating}&api_key=${requestKey}`
+    }
+
+
+
+    fetch(searchURL)
       .then(response => response.json())
       .then(this._updateItems)
       .catch(console.error); // eslint-disable-line no-console
